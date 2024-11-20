@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    #heading {
+      color: rgb(20, 22, 22);
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    #but {
+      color: rgb(7, 7, 7);
+      background-color: rgb(12, 240, 81);
+      border-radius: 10px;
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+    }
+
+    .box {
+      border: 1px solid black;
+      display: flex;
+      justify-content: space-evenly;
+      align-items: center;
+      margin: 10px;
+      padding: 10px;
+    }
+
+    .todo-container {
+      margin-top: 20px;
+    }
+
+    .todo-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      border: 1px solid black;
+      margin-bottom: 5px;
+    }
+
+    .remove-button {
+      background-color: rgb(240, 68, 68);
+      border: none;
+      border-radius: 5px;
+      padding: 5px 10px;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
+  <title>To-Do List</title>
+</head>
+<body>
+  <h1 id="heading">TO-DO LIST</h1>
+
+  <div class="box">
+    <input id="textt" type="text" placeholder="Enter your task">
+    <input id="date" type="date">
+    <button id="but" onclick="addTask()">Submit</button>
+  </div>
+
+  <div class="todo-container" id="todo-container">
+    <!-- To-Do Items will appear here -->
+  </div>
+
+  <script>
+    // Load tasks from local storage on page load
+    window.onload = function() {
+      loadTasks();
+    };
+
+    // Add a new task and store it in local storage
+    function addTask() {
+      const taskText = document.getElementById('textt').value;
+      const taskDate = document.getElementById('date').value;
+
+      if (!taskText || !taskDate) {
+        alert('Please enter both a task and a date.');
+        return;
+      }
+
+      const newTask = { text: taskText, date: taskDate };
+      let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+      tasks.push(newTask);
+      localStorage.setItem('tasks', JSON.stringify(tasks));
+
+      displayTask(newTask);
+
+      // Clear the input fields
+      document.getElementById('textt').value = '';
+      document.getElementById('date').value = '';
+    }
+
+    // Display a task in the to-do container
+    function displayTask(task) {
+      const todoContainer = document.getElementById('todo-container');
+
+      const todoItem = document.createElement('div');
+      todoItem.className = 'todo-item';
+
+      const taskInfo = document.createElement('span');
+      taskInfo.innerText = `${task.text} - ${task.date}`;
+
+      const removeButton = document.createElement('button');
+      removeButton.className = 'remove-button';
+      removeButton.innerText = 'Remove';
+      removeButton.onclick = function() {
+        removeTask(task);
+        todoContainer.removeChild(todoItem);
+      };
+
+      todoItem.appendChild(taskInfo);
+      todoItem.appendChild(removeButton);
+
+      todoContainer.appendChild(todoItem);
+    }
+
+    // Load all tasks from local storage and display them
+    function loadTasks() {
+      const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+      tasks.forEach(task => displayTask(task));
+    }
+
+    // Remove a task from local storage
+    function removeTask(taskToRemove) {
+      let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+      tasks = tasks.filter(task => !(task.text === taskToRemove.text && task.date === taskToRemove.date));
+      localStorage.setItem('tasks', JSON.stringify(tasks));
+    }
+  </script>
+</body>
+</html>
